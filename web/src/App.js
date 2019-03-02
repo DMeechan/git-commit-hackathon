@@ -38,13 +38,19 @@ class App extends Component {
     this.state = {
       response: false,
       recording: false,
+      text: '',
     };
     this.count = 0;
   }
 
   handleClick = () => {
+    const self = this;
     if (!this.state['recording']) {
-      startRecording();
+      startRecording(function(newText, dataFinal) {
+        // console.log('newText: ', newText);
+        self.state.text = newText;
+        self.forceUpdate();
+      });
     } else {
       stopRecording();
     }
@@ -86,7 +92,7 @@ class App extends Component {
   }
 
   render() {
-    const { response, recording } = this.state;
+    const { response, recording, text } = this.state;
     return (
       <div className="App">
         <Card
@@ -125,9 +131,8 @@ class App extends Component {
                 bordered={false}
                 style={{ minHeight: '500px' }}
               >
-                <p>Card content</p>
                 <div>
-                  <span id="speechToTextField" />
+                  <span id="speechToTextField">{text}</span>
                   <p id="result-text" />
                 </div>
               </Card>

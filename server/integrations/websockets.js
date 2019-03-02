@@ -32,7 +32,7 @@ module.exports = function startWebsocketServer(server) {
         });
 
         client.on('binaryData', function (bufferData) {
-            console.log('Uploading binary data', bufferData.length);
+            // console.log('Uploading binary data of size:', bufferData.length);
             speechToText.write(recognizeStream, bufferData);
         });
     });

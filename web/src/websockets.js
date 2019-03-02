@@ -17,7 +17,8 @@ let bufferSize = 2048,
   context,
   processor,
   input,
-  globalStream;
+  globalStream,
+  outputCallback;
 
 // variables
 let resultText = document.getElementById('result-text'),
@@ -71,10 +72,11 @@ function microphoneProcess(e) {
 
 // var recordingStatus = document.getElementById("recordingStatus");
 
-export function startRecording() {
+export function startRecording(callback) {
   // startButton.disabled = true;
   // endButton.disabled = false;
   // recordingStatus.style.visibility = "visible";
+  outputCallback = callback;
   initRecording();
 }
 
@@ -123,59 +125,61 @@ socket.on('messages', function(data) {
 
 socket.on('speechData', function(data) {
   // console.log(data.results[0].alternatives[0].transcript);
-  var dataFinal = undefined || data.results[0].isFinal;
+  let dataFinal = undefined || data.results[0].isFinal;
+  const transcript = data.results[0].alternatives[0].transcript;
+  outputCallback(transcript, dataFinal)
 
-  if (dataFinal === false) {
-    // console.log(resultText.lastElementChild);
-    if (removeLastSentence) {
-      resultText.lastElementChild.remove();
-    }
-    removeLastSentence = true;
+//   if (dataFinal === false) {
+//     // console.log(resultText.lastElementChild);
+//     if (removeLastSentence) {
+//       resultText.lastElementChild.remove();
+//     }
+//     removeLastSentence = true;
 
-    //add empty span
-    let empty = document.getElementById('speechToTextField');
-    resultText.appendChild(empty);
+//     //add empty span
+//     let empty = document.getElementById('speechToTextField');
+//     resultText.appendChild(empty);
 
-    //add children to empty span
-    let edit = addTimeSettingsInterim(data);
+//     //add children to empty span
+//     let edit = addTimeSettingsInterim(data);
 
-    for (var i = 0; i < edit.length; i++) {
-      resultText.lastElementChild.appendChild(edit[i]);
-      resultText.lastElementChild.appendChild(
-        document.createTextNode('\u00A0')
-      );
-    }
-  } else if (dataFinal === true) {
-    resultText.lastElementChild.remove();
+//     for (var i = 0; i < edit.length; i++) {
+//       resultText.lastElementChild.appendChild(edit[i]);
+//       resultText.lastElementChild.appendChild(
+//         document.createTextNode('\u00A0')
+//       );
+//     }
+//   } else if (dataFinal === true) {
+//     resultText.lastElementChild.remove();
 
-    //add empty span
-    let empty = document.getElementById('speechToTextField');
-    resultText.appendChild(empty);
+//     //add empty span
+//     let empty = document.getElementById('speechToTextField');
+//     resultText.appendChild(empty);
 
-    //add children to empty span
-    let edit = addTimeSettingsFinal(data);
-    for (var i = 0; i < edit.length; i++) {
-      if (i === 0) {
-        edit[i].innerText = capitalize(edit[i].innerText);
-      }
-      resultText.lastElementChild.appendChild(edit[i]);
+//     //add children to empty span
+//     let edit = addTimeSettingsFinal(data);
+//     for (var i = 0; i < edit.length; i++) {
+//       if (i === 0) {
+//         edit[i].innerText = capitalize(edit[i].innerText);
+//       }
+//       resultText.lastElementChild.appendChild(edit[i]);
 
-      if (i !== edit.length - 1) {
-        resultText.lastElementChild.appendChild(
-          document.createTextNode('\u00A0')
-        );
-      }
-    }
-    resultText.lastElementChild.appendChild(
-      document.createTextNode('\u002E\u00A0')
-    );
+//       if (i !== edit.length - 1) {
+//         resultText.lastElementChild.appendChild(
+//           document.createTextNode('\u00A0')
+//         );
+//       }
+//     }
+//     resultText.lastElementChild.appendChild(
+//       document.createTextNode('\u002E\u00A0')
+//     );
 
-    console.log("Google Speech sent 'final' Sentence.");
-    // finalWord = true;
-    // endButton.disabled = false;
+//     console.log("Google Speech sent 'final' Sentence.");
+//     // finalWord = true;
+//     // endButton.disabled = false;
 
-    removeLastSentence = false;
-  }
+//     removeLastSentence = false;
+//   }
 });
 
 //================= Juggling Spans for nlp Coloring =================
