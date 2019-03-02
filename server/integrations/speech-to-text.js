@@ -4,7 +4,7 @@ async function main() {
 
     const client = new speech.SpeechClient();
 
-    const fileName = 'files/obama.mp3';
+    const fileName = 'files/obamaPart1.wav';
 
     const file = fs.readFileSync(fileName);
     const audioBytes = file.toString('base64');
@@ -15,7 +15,7 @@ async function main() {
 
     const config = {
         encoding: 'LINEAR16',
-        sampleRateHertz: 16000,
+        sampleRateHertz: 24000,
         languageCode: 'en-US',
     };
 
