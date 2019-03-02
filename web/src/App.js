@@ -49,11 +49,11 @@ class App extends Component {
   }
 
   StartButton = () => (
-    <Button type="primary" size="large" id="startRecButton" onClick={handleClick}>Start Recording</Button>
+    <Button type="primary" size="large" id="startRecButton" onClick={this.handleClick}>Start Recording</Button>
   );
 
   StopButton = () => (
-    <Button type="danger" size="large" id="stopRecButton" onClick={stopRecording}>Stop Recording</Button>
+    <Button type="danger" size="large" id="stopRecButton" onClick={this.handleClick}>Stop Recording</Button>
   );
 
 
