@@ -6,7 +6,6 @@ const speechToText = require('./speech-to-text-from-stream');
 
 module.exports = function startWebsocketServer(server) {
     const io = require('socket.io')(server)
-    let recognizeStream = null;
 
     io.on('connection', function (client) {
         console.log('=> Client connected to server');
