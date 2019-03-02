@@ -31,9 +31,9 @@ module.exports = function startWebsocketServer(server) {
             recognizeStream = speechToText.endRecognitionStream(recognizeStream);
         });
 
-        client.on('binaryData', function (data) {
-            console.log('binary boiisss')
-            recognizeStream = speechToText.write(recognizeStream, data);
+        client.on('binaryData', function (bufferData) {
+            console.log('Uploading binary data', bufferData.length);
+            speechToText.write(recognizeStream, bufferData);
         });
     });
 }

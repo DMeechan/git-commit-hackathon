@@ -54,11 +54,11 @@ function endRecognitionStream(recognizeStream) {
 }
 
 function write(recognizeStream, data) {
-    if (recognizeStream !== null) {
+    if (recognizeStream != undefined) {
         recognizeStream.write(data);
     }
 }
 
 module.exports = {
-    getRecognitionStream, endRecognitionStream
+    getRecognitionStream, endRecognitionStream, write
 }
