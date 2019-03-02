@@ -12,6 +12,8 @@ module.exports = function startWebsocketServer(server) {
         console.log('=> Client connected to server');
         let recognizeStream = null;
 
+        client.emit('join', 'sup bois');
+
         client.on('join', data => {
             client.emit('messages', 'Established websocket connection with server :D')
         });

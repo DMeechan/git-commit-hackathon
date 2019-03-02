@@ -12,6 +12,7 @@ class App extends Component {
     this.state = {
       response: false,
       endpoint: "http://127.0.0.1:8080",
+      recording: false
     }
   }
 
@@ -21,18 +22,29 @@ class App extends Component {
     socket.on("join", data => this.setState({ response: data }));
   }
   render() {
-    const { response } = this.state;
+    const { response, recording } = this.state;
     return (
       <div style={{ textAlign: "center" }}>
         {response
           ? <p>
-              The temperature in Florence is: {response} °F
+              Websocket response: {response}
             </p>
           : <p>Loading...</p>}
+          <div>
+            {recording ? <StopButton /> : <RecordButton />}
+          </div>
       </div>
     );
   }
 }
+
+const RecordButton = () => (
+  <Button type="primary" size="large">Record</Button>
+);
+
+const StopButton = () => (
+  <Button type="primary" size="large">Stop</Button>
+);
 
 const AppOrg = () => (
   <div className="App">
