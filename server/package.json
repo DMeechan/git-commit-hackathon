@@ -1,12 +1,12 @@
 {
-  "name": "hackathon-starter",
-  "version": "5.1.2",
-  "description": "A boilerplate for Node.js web applications",
+  "name": "git-commit-team",
+  "version": "0.0.1",
+  "description": "Team Git Commit",
   "repository": {
     "type": "git",
-    "url": "https://github.com/sahat/hackathon-starter.git"
+    "url": "https://github.com/DMeechan/git-commit-hackathon.git"
   },
-  "author": "Sahat Yalkabov",
+  "author": "Team Git Commit",
   "license": "MIT",
   "scripts": {
     "start": "node app.js",
