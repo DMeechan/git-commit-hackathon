@@ -12,6 +12,7 @@ const expressValidator = require('express-validator'); // string validation
 const expressStatusMonitor = require('express-status-monitor'); // realtime server metrics
 const lusca = require('lusca'); // security
 const multer = require('multer'); // multipart / form data
+const session = require('express-session');
 
 /**
  * LOGGING AND ERROR HANDLING
@@ -78,6 +79,16 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(expressValidator());
+app.use(session({
+  resave: true,
+  saveUninitialized: true,
+  secret: "wubbalubbadubdubthisisalongiugfy8wefgwr7932g^*FYIGFGJUHbk",
+  cookie: { maxAge: 604800000 }, // one week in milliseconds
+  // store: new MongoStore({
+  //   url: process.env.MONGODB_URI,
+  //   autoReconnect: true,
+  // })
+}));
 
 app.use((req, res, next) => {
   if (req.path === '/api/upload') {
