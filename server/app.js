@@ -29,7 +29,7 @@ const dotenv = require('dotenv');
 
 
 /**
- * DATA
+ * DATAs
  */
 const upload = multer({ dest: path.join(__dirname, 'uploads') }); // file uploads
 // const mongoose = require('mongoose'); // MongoDB database
