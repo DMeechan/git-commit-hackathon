@@ -29,5 +29,9 @@ module.exports = function startWebsocketServer(server) {
         client.on('endAudioStream', function (data) {
             recognizeStream = speechToText.endRecognitionStream(recognizeStream);
         });
+
+        client.on('binaryData', function (data) {
+            recognizeStream = speechToText.write(recognizeStream, data);
+        });
     });
 }

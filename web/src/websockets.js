@@ -1,12 +1,11 @@
-'use strict'
+import socketIOClient from "socket.io-client";
+import nlp from "compromise";
 
-//  Google Cloud Speech Playground with node.js and socket.io
-//  Created by Vinzenz Aubry for sansho 24.01.17
-//  Feel free to improve!
-//	Contact: vinzenz@sansho.studio
-const io = require("socket.io-client");
 //connection to socket
-const socket = io.connect();
+const url = "http://127.0.0.1:8080";
+const socket = socketIOClient(url);
+
+socket.on("join", data => console.log(`Connection establised: ${data}`));
 
 //================= CONFIG =================
 // Stream Audio
@@ -17,15 +16,13 @@ let bufferSize = 2048,
 	input,
 	globalStream;
 
-//vars
-let audioElement = document.querySelector('audio'),
-	finalWord = false,
-	resultText = document.getElementById('ResultText'),
+// variables
+let resultText = document.getElementById('result-text'),
 	removeLastSentence = true,
 	streamStreaming = false;
 
 
-//audioStream constraints
+// audioStream constraints
 const constraints = {
 	audio: true,
 	video: false
@@ -33,10 +30,8 @@ const constraints = {
 
 //================= RECORDING =================
 
-
-
 function initRecording() {
-	socket.emit('startGoogleCloudStream', ''); //init socket Google Speech Connection
+	socket.emit('startAudioStream', ''); //init socket Google Speech Connection
 	streamStreaming = true;
 	AudioContext = window.AudioContext || window.webkitAudioContext;
 	context = new AudioContext();
@@ -70,30 +65,29 @@ function microphoneProcess(e) {
 
 
 //================= INTERFACE =================
-var startButton = document.getElementById("startRecButton");
-startButton.addEventListener("click", startRecording);
+// var startButton = document.getElementById("startRecButton");
+// startButton.addEventListener("click", startRecording);
 
-var endButton = document.getElementById("stopRecButton");
-endButton.addEventListener("click", stopRecording);
-endButton.disabled = true;
+// var endButton = document.getElementById("stopRecButton");
+// endButton.addEventListener("click", stopRecording);
+// endButton.disabled = true;
 
-var recordingStatus = document.getElementById("recordingStatus");
+// var recordingStatus = document.getElementById("recordingStatus");
 
-
-function startRecording() {
-	startButton.disabled = true;
-	endButton.disabled = false;
-	recordingStatus.style.visibility = "visible";
+export function startRecording() {
+	// startButton.disabled = true;
+	// endButton.disabled = false;
+	// recordingStatus.style.visibility = "visible";
 	initRecording();
 }
 
-function stopRecording() {
+export function stopRecording() {
 	// waited for FinalWord
-	startButton.disabled = false;
-	endButton.disabled = true;
-	recordingStatus.style.visibility = "hidden";
+	// startButton.disabled = false;
+	// endButton.disabled = true;
+	// recordingStatus.style.visibility = "hidden";
 	streamStreaming = false;
-	socket.emit('endGoogleCloudStream', '');
+	socket.emit('endAudioStream', '');
 
 
 	let track = globalStream.getTracks()[0];
@@ -106,7 +100,7 @@ function stopRecording() {
 		processor = null;
 		context = null;
 		AudioContext = null;
-		startButton.disabled = false;
+		// startButton.disabled = false;
 	});
 
 	// context.close();
@@ -144,7 +138,7 @@ socket.on('speechData', function (data) {
 		removeLastSentence = true;
 
 		//add empty span
-		let empty = document.createElement('span');
+		let empty = document.getElementById('speechToTextField');
 		resultText.appendChild(empty);
 
 		//add children to empty span
@@ -159,7 +153,7 @@ socket.on('speechData', function (data) {
 		resultText.lastElementChild.remove();
 
 		//add empty span
-		let empty = document.createElement('span');
+		let empty = document.getElementById('speechToTextField');
 		resultText.appendChild(empty);
 
 		//add children to empty span
@@ -177,8 +171,8 @@ socket.on('speechData', function (data) {
 		resultText.lastElementChild.appendChild(document.createTextNode('\u002E\u00A0'));
 
 		console.log("Google Speech sent 'final' Sentence.");
-		finalWord = true;
-		endButton.disabled = false;
+		// finalWord = true;
+		// endButton.disabled = false;
 
 		removeLastSentence = false;
 	}
@@ -219,8 +213,8 @@ function addTimeSettingsInterim(speechData) {
 		words_without_time.push(newSpan);
 	}
 
-	finalWord = false;
-	endButton.disabled = true;
+	// finalWord = false;
+	// endButton.disabled = true;
 
 	return words_without_time;
 }
@@ -265,7 +259,7 @@ function addTimeSettingsFinal(speechData) {
 }
 
 window.onbeforeunload = function () {
-	if (streamStreaming) { socket.emit('endGoogleCloudStream', ''); }
+	if (streamStreaming) { socket.emit('endAudioStream', ''); }
 };
 
 //================= SANTAS HELPERS =================
@@ -284,30 +278,30 @@ function convertFloat32ToInt16(buffer) {
 }
 
 var downsampleBuffer = function (buffer, sampleRate, outSampleRate) {
-    if (outSampleRate == sampleRate) {
-        return buffer;
-    }
-    if (outSampleRate > sampleRate) {
-        throw "downsampling rate show be smaller than original sample rate";
-    }
-    var sampleRateRatio = sampleRate / outSampleRate;
-    var newLength = Math.round(buffer.length / sampleRateRatio);
-    var result = new Int16Array(newLength);
-    var offsetResult = 0;
-    var offsetBuffer = 0;
-    while (offsetResult < result.length) {
-        var nextOffsetBuffer = Math.round((offsetResult + 1) * sampleRateRatio);
-        var accum = 0, count = 0;
-        for (var i = offsetBuffer; i < nextOffsetBuffer && i < buffer.length; i++) {
-            accum += buffer[i];
-            count++;
-        }
+	if (outSampleRate == sampleRate) {
+		return buffer;
+	}
+	if (outSampleRate > sampleRate) {
+		throw "downsampling rate show be smaller than original sample rate";
+	}
+	var sampleRateRatio = sampleRate / outSampleRate;
+	var newLength = Math.round(buffer.length / sampleRateRatio);
+	var result = new Int16Array(newLength);
+	var offsetResult = 0;
+	var offsetBuffer = 0;
+	while (offsetResult < result.length) {
+		var nextOffsetBuffer = Math.round((offsetResult + 1) * sampleRateRatio);
+		var accum = 0, count = 0;
+		for (var i = offsetBuffer; i < nextOffsetBuffer && i < buffer.length; i++) {
+			accum += buffer[i];
+			count++;
+		}
 
-        result[offsetResult] = Math.min(1, accum / count)*0x7FFF;
-        offsetResult++;
-        offsetBuffer = nextOffsetBuffer;
-    }
-    return result.buffer;
+		result[offsetResult] = Math.min(1, accum / count) * 0x7FFF;
+		offsetResult++;
+		offsetBuffer = nextOffsetBuffer;
+	}
+	return result.buffer;
 }
 
 function capitalize(s) {
