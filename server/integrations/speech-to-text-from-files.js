@@ -4,7 +4,7 @@ async function main() {
 
     const client = new speech.SpeechClient();
 
-    const fileName = 'files/obamaPart1.wav';
+    const fileName = 'files/lecture.wav';
 
     const file = fs.readFileSync(fileName);
     const audioBytes = file.toString('base64');
