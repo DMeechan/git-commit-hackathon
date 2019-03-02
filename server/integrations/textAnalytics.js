@@ -47,6 +47,10 @@
 //   method: "POST"
 // })
 
+const dotenv = require('dotenv');
+dotenv.load({ path: '.env' });
+const API_KEY = process.env.WATSON_API_KEY
+
 function outOfFive(n) {
   return (((n+1)/2)*5)
 }
@@ -56,7 +60,7 @@ function request(url){
   var NaturalLanguageUnderstandingV1 = require('watson-developer-cloud/natural-language-understanding/v1.js');
   var naturalLanguageUnderstanding = new NaturalLanguageUnderstandingV1({
     version: '2018-11-16',
-    iam_apikey: 'gMelu-T5cMe5Q1-dusX4B-0tEItpD94gTOpEllPIcUZ7',
+    iam_apikey: API_KEY,
     url: 'https://gateway-lon.watsonplatform.net/natural-language-understanding/api'
   });
 
