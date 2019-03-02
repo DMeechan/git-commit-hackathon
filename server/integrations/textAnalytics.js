@@ -35,9 +35,6 @@
 // //       }
 // //   }
 
-
-
-
 // fetch("https://gateway-lon.watsonplatform.net/natural-language-understanding/api/v1/analyze?version=2018-03-19", {
 //   body: "{  \"text\": \"I still have a dream. It is a dream deeply rooted in the American dream. I have a dream that one day this nation will rise up and live out the true meaning of its creed: \"We hold these truths to be self-evident, that all men are created equal.\\\"\",  \"features\": {    \"sentiment\": {},    \"keywords\": {}  }}",
 //   headers: {
@@ -47,47 +44,45 @@
 //   method: "POST"
 // })
 
-const dotenv = require('dotenv');
-dotenv.load({ path: '.env' });
+require('dotenv').config();
 const API_KEY = process.env.WATSON_API_KEY
+console.log("Watson API key:", API_KEY)
+
+const NaturalLanguageUnderstandingV1 = require('watson-developer-cloud/natural-language-understanding/v1.js');
+const naturalLanguageUnderstanding = new NaturalLanguageUnderstandingV1({
+  version: '2018-11-16',
+  iam_apikey: API_KEY,
+  url: 'https://gateway-lon.watsonplatform.net/natural-language-understanding/api'
+});
 
 function outOfFive(n) {
-  return (((n+1)/2)*5)
+  return (((n + 1) / 2) * 5)
 }
 
-
-function request(url){
-  var NaturalLanguageUnderstandingV1 = require('watson-developer-cloud/natural-language-understanding/v1.js');
-  var naturalLanguageUnderstanding = new NaturalLanguageUnderstandingV1({
-    version: '2018-11-16',
-    iam_apikey: API_KEY,
-    url: 'https://gateway-lon.watsonplatform.net/natural-language-understanding/api'
-  });
-
-  var parameters = {
-    'url': url,
+function request(text) {
+  const parameters = {
+    text: text,
     'features': {
       'sentiment': {
-        'document': false
+        'targets': text.split(' ')
       }
     }
 
   };
 
-  naturalLanguageUnderstanding.analyze(parameters, function(err, response) {
-    if (err)
+  naturalLanguageUnderstanding.analyze(parameters, function (err, response) {
+    if (err) {
       console.log('error:', err);
-    else
-      console.log(response['sentiment']);
-    // console.log(response);
-    console.log(outOfFive(response['sentiment']['document']['score']));
-
-
+    } else {
+      // console.log(response['sentiment']);
+      console.log(outOfFive(response['sentiment']['document']['score']));
+    }
   });
 }
 
 
-request('https://www.bbc.co.uk/news/newsbeat-47356852');
+const text = "i think this hackathon is quite cool but they need to improve their vegan options";
+request(text);
 
 
 
