@@ -4,7 +4,7 @@
 
 TBD.
 
-## What are you building it with?
+## What are we building it with?
 
 Front-end:
 
