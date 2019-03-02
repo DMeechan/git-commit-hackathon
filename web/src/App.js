@@ -32,17 +32,24 @@ class App extends Component {
   }
 
   handleClick = () => {
+    if(!this.state["recording"]) {
+      startRecording();
+    } else {
+      stopRecording();
+    }
+    
     this.state["recording"] = !this.state["recording"];
     if (this.count < 4) {
       this.count += 1;
     } else {
       this.count = 0;
     }
+    
     this.forceUpdate()
   }
 
   StartButton = () => (
-    <Button type="primary" size="large" id="startRecButton" onClick={startRecording}>Start Recording</Button>
+    <Button type="primary" size="large" id="startRecButton" onClick={handleClick}>Start Recording</Button>
   );
 
   StopButton = () => (
