@@ -2,7 +2,15 @@
 
 ## What are we building?
 
-TBD.
+Today, ratings do not reveal the reality behind how good or bad an institution or business is due to inherent human bias. People have problems quantifying their happiness. 
+
+There are two types of biases that come into play: Middle Category Bias and Extreme Response Bias.
+Raters have a tendency to place ratings either in the middle of the scale this is known as middle category bias - these people avoid extreme positions.
+Others rate in the extreme positions by avoiding middle categories on the scale - this is known as extreme response bias. 
+
+Through our platform and by using appropriate sentiment analysis we will be able to eliminate bias and provide accurate information. We have built a website that takes in voice from the user, converts it into text in real time and then does sentiment analysis to quantify their feedback. 
+
+Ultimately we hope our platform will enable any business or institution requiring feedback in St-Andrews and beyond to know where they really stand so that they can optimise their businesses with accurate ratings and we can play our small role in making the world a better place.
 
 ## What are we building it with?
 

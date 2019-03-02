@@ -47,7 +47,7 @@ class App extends Component {
     const self = this;
     if (!this.state['recording']) {
       startRecording(function(newText, dataFinal) {
-        // console.log('newText: ', newText);
+        console.log('newText: ', newText, dataFinal);
         self.state.text = newText;
         self.forceUpdate();
       });
