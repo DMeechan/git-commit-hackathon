@@ -51,6 +51,7 @@ const contactController = require('./controllers/contact');
  * Create Express server.
  */
 const app = express();
+const server = require('http').createServer(app);
 
 /**
  * Connect to MongoDB.
@@ -137,11 +138,16 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 /**
+ * Start websocket server (for realtime audio uploads)
+ */
+require('./integrations/websockets')(server);
+
+/**
  * Start Express server.
  */
-app.listen(app.get('port'), () => {
+server.listen(app.get('port'), () => {
   console.log('%s App is running at http://localhost:%d in %s mode', chalk.green('✓'), app.get('port'), app.get('env'));
   console.log('  Press CTRL-C to stop\n');
-});
+})
 
 module.exports = app;
