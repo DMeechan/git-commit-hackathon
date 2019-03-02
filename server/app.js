@@ -113,6 +113,8 @@ app.use('/', express.static(path.join(__dirname, 'public'), { maxAge: 3155760000
 app.get('/', homeController.index);
 app.get('/contact', contactController.getContact);
 app.post('/contact', contactController.postContact);
+// use the pageRoute property to serve the dashboard html page
+// app.get('/status', expressStatusMonitor.pageRoute);
 
 /**
  * API examples routes.
