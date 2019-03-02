@@ -36,11 +36,6 @@ const apiController = require('./controllers/api');
 const contactController = require('./controllers/contact');
 
 /**
- * API keys and Passport configuration.
- */
-const passportConfig = require('./hackathon-starter/config/passport');
-
-/**
  * Create Express server.
  */
 const app = express();
