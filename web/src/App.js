@@ -38,6 +38,7 @@ class App extends Component {
     this.state = {
       response: false,
       recording: false,
+      tempText: '',
       text: '',
     };
     this.count = 0;
@@ -48,7 +49,10 @@ class App extends Component {
     if (!this.state['recording']) {
       startRecording(function(newText, dataFinal) {
         // console.log('newText: ', newText);
-        self.state.text = newText;
+        self.state.tempText = newText;
+        if(dataFinal) {
+          self.state.text = self.state.text + newText;
+        }
         self.forceUpdate();
       });
     } else {
@@ -92,7 +96,7 @@ class App extends Component {
   }
 
   render() {
-    const { response, recording, text } = this.state;
+    const { response, recording, text, tempText } = this.state;
     return (
       <div className="App">
         <Card
@@ -111,7 +115,6 @@ class App extends Component {
           </Steps>
           <br />
           {recording ? <this.StopButton /> : <this.StartButton />}
-          <button style={{ marginLeft: '10px' }}>Reset</button>
         </Card>
         <div
           style={{
@@ -132,7 +135,8 @@ class App extends Component {
                 style={{ minHeight: '500px' }}
               >
                 <div>
-                  <span id="speechToTextField">{text}</span>
+                  <p>Temporary Text: {tempText}</p>
+                  <span id="speechToTextField">Final Text: {text}</span>
                   <p id="result-text" />
                 </div>
               </Card>
