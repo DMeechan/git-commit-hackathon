@@ -8,7 +8,7 @@ const speechClient = new speech.SpeechClient();
 
 const encoding = 'LINEAR16';
 const sampleRateHertz = 32000;
-const languageCode = 'en-US'; // BCP-47 language code
+const languageCode = 'en-GB'; // BCP-47 language code
 
 const request = {
     config: {
@@ -17,9 +17,9 @@ const request = {
         languageCode: languageCode,
         profanityFilter: false,
         enableWordTimeOffsets: false,
-        // speechContexts: [{
-        //     phrases: ["hoful","shwazil"]
-        //    }] // add your own speech context for better recognition
+         speechContexts: [{
+             phrases: ["hackathon"]
+            }] // add your own speech context for better recognition
     },
     interimResults: true // realtime translation as the user is speaking
 };

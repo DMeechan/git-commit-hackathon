@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
+import { ReactMic } from 'react-mic';
 import {
   Form,
+  Statistic,
   Select,
-  InputNumber,
+  message,
   Icon,
   Rate,
   Progress,
@@ -39,17 +41,19 @@ class App extends Component {
         sadness: 0,
         fear: 0,
         disgust: 0,
-      }
+      },
+      record: false
     };
   }
 
   handleClick = () => {
     const self = this;
-
     if (!this.state['recording']) {
+      // message.info("Recording started...");
       self.setState({
         text: '',
         tempText: '',
+        count: 0,
       });
       self.forceUpdate();
 
@@ -71,7 +75,9 @@ class App extends Component {
       stopRecording();
     }
 
-    this.state['recording'] = !this.state['recording'];
+    this.state.recording = !this.state.recording;
+    this.state.record = !this.state.record;
+
     if (this.state.count < 4) {
       this.setState((state, props) => ({
         count: state.count + 1,
@@ -83,11 +89,15 @@ class App extends Component {
     }
 
     if (this.state['recording'] === false && this.state['text'].length > 5) {
+      // message.warning("Recording saved. Analyzing data...");
       this.setState({
         count: 3,
       });
+
+      // this.forceUpdate();
+      console.log(this.state.text + this.state.tempText);
       sendTextForAnalysis(
-        this.state.text,
+        this.state.text + this.state.tempText,
         rating => {
           self.setState({
             stars: rating,
@@ -99,6 +109,7 @@ class App extends Component {
           });
         }
       );
+      // message.success("Analysis done.");
       this.setState({
         count: 4,
       });
@@ -129,10 +140,19 @@ class App extends Component {
     </Button>
   );
 
+  onData() {
+    console.log('chunk of real-time data is');
+  }
+ 
+  onStop() {
+    console.log('recordedBlob is');
+  }
+ 
+
   componentDidMount() {
     const { endpoint } = this.state;
   }
-
+  
   render() {
     const { count, recording, text, tempText, stars, emotions } = this.state;
     return (
@@ -153,6 +173,14 @@ class App extends Component {
           </Steps>
           <br />
           {recording ? <this.StopButton /> : <this.StartButton />}
+          <br />
+          <ReactMic
+          record={this.state.record}
+          className="sound-wave"
+          onStop={null}
+          onData={null}
+          strokeColor="#000000"
+          backgroundColor="#FFFFFF" />
         </Card>
         <div
           style={{
