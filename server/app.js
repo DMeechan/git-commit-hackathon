@@ -9,10 +9,7 @@ const express = require('express');
 const cors = require('cors');
 const compression = require('compression');
 const bodyParser = require('body-parser');
-const expressValidator = require('express-validator'); // string validation
-const expressStatusMonitor = require('express-status-monitor'); // realtime server metrics
 const lusca = require('lusca'); // security
-const multer = require('multer'); // multipart / form data
 const session = require('express-session');
 
 /**
@@ -23,28 +20,20 @@ const chalk = require('chalk');
 const errorHandler = require('errorhandler');
 
 /**
- * UTILITIES
+ * DATABASE
  */
-const path = require('path');
+const mongoose = require('mongoose');
 
 /**
  * Load environment variables from .env file, where API keys and passwords are configured.
  */
 require('dotenv').config();
-
-
-/**
- * DATAs
- */
-const upload = multer({ dest: path.join(__dirname, 'uploads') }); // file uploads
-// const mongoose = require('mongoose'); // MongoDB database
+const path = require('path');
 
 /**
  * Controllers (route handlers).
  */
 const homeController = require('./controllers/home');
-const apiController = require('./controllers/api');
-const contactController = require('./controllers/contact');
 
 /**
  * Create Express server.
@@ -53,17 +42,17 @@ const app = express();
 const server = require('http').createServer(app);
 
 /**
- * Connect to MongoDB.
+ * Connect to MongoDB database
  */
-// mongoose.set('useFindAndModify', false);
-// mongoose.set('useCreateIndex', true);
-// mongoose.set('useNewUrlParser', true);
-// mongoose.connect(process.env.MONGODB_URI);
-// mongoose.connection.on('error', (err) => {
-//   console.error(err);
-//   console.log('%s MongoDB connection error. Please make sure MongoDB is running.', chalk.red('✗'));
-//   process.exit();
-// });
+mongoose.set('useFindAndModify', false);
+mongoose.set('useCreateIndex', true);
+mongoose.set('useNewUrlParser', true);
+mongoose.connect(process.env.MONGODB_URI);
+mongoose.connection.on('error', (err) => {
+  console.error(err);
+  console.log('%s MongoDB connection error. Please make sure MongoDB is running.', chalk.red('✗'));
+  process.exit();
+});
 
 /**
  * Express configuration.
@@ -73,31 +62,23 @@ app.set('port', process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 app.use(cors());
-app.use(expressStatusMonitor());
 app.use(compression());
 
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(expressValidator());
 app.use(session({
   resave: true,
   saveUninitialized: true,
   secret: "wubbalubbadubdubthisisalongiugfy8wefgwr7932g^*FYIGFGJUHbk",
   cookie: { maxAge: 604800000 }, // one week in milliseconds
-  // store: new MongoStore({
-  //   url: process.env.MONGODB_URI,
-  //   autoReconnect: true,
-  // })
+  store: new MongoStore({
+    url: process.env.MONGODB_URI,
+    autoReconnect: true,
+  })
 }));
 
-app.use((req, res, next) => {
-  if (req.path === '/api/upload') {
-    next();
-  } else {
-    lusca.csrf()(req, res, next);
-  }
-});
+
 app.use(lusca.xframe('SAMEORIGIN'));
 app.use(lusca.xssProtection(true));
 app.disable('x-powered-by');
@@ -106,23 +87,11 @@ app.use((req, res, next) => {
   next();
 });
 
+/**
+ * App routes and static assets
+ */
 app.use('/', express.static(path.join(__dirname, 'public'), { maxAge: 31557600000 }));
-
-/**
- * Primary app routes.
- */
 app.get('/', homeController.index);
-app.get('/contact', contactController.getContact);
-app.post('/contact', contactController.postContact);
-// use the pageRoute property to serve the dashboard html page
-// app.get('/status', expressStatusMonitor.pageRoute);
-
-/**
- * API examples routes.
- */
-app.get('/api', apiController.getApi);
-app.get('/api/upload', apiController.getFileUpload);
-app.post('/api/upload', upload.single('myFile'), apiController.postFileUpload);
 
 /**
  * Error Handler.
@@ -138,7 +107,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 /**
- * Start websocket server (for realtime audio uploads)
+ * Start websocket server (for realtime functionality)
  */
 require('./integrations/websockets')(server);
 

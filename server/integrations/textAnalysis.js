@@ -1,10 +1,17 @@
+// Import dependencies
+const round = require('../utils/round');
+const getRating = require('../utils/getRating');
+
+// Load environment variables
 require('dotenv').config();
 
+// Get Watson API key
 const API_KEY = process.env.WATSON_API_KEY;
 console.log(
   API_KEY ? 'Found Watson API key' : 'ERROR: Could not find Watson API key :('
 );
 
+// Initialize Watson NLU client
 const NaturalLanguageUnderstandingV1 = require('watson-developer-cloud/natural-language-understanding/v1.js');
 const naturalLanguageUnderstanding = new NaturalLanguageUnderstandingV1({
   version: '2018-11-16',
@@ -12,14 +19,6 @@ const naturalLanguageUnderstanding = new NaturalLanguageUnderstandingV1({
   url:
     'https://gateway-lon.watsonplatform.net/natural-language-understanding/api',
 });
-
-const round = num => Math.round(num * 100) / 100;
-const roundHalf = num => Math.round(num * 2) / 2;
-
-function getRating(watsonScore) {
-  const rating = ((watsonScore + 1) / 2) * 5;
-  return roundHalf(rating);
-}
 
 function getParameters(text, target) {
   let response = {
@@ -34,6 +33,10 @@ function getParameters(text, target) {
   return response;
 }
 
+/**
+ * Wrap Watson's NLU library function (using callbacks) in a promise for sexiness
+ * @param {*} parameters  for Watson NLU response
+ */
 async function getAnalysis(parameters) {
   return new Promise((resolve, reject) => {
     naturalLanguageUnderstanding.analyze(parameters, (error, response) => {
@@ -69,7 +72,7 @@ async function requestEmotions(text) {
     for (let key in emotion) {
       if (emotion.hasOwnProperty(key)) {
         const value = emotion[key];
-        emotion[key] = round(value) * 100;
+        emotion[key] = round.twoDecimalPlaces(value) * 100;
       }
     }
 

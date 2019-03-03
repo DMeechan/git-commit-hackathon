@@ -2,7 +2,7 @@
 * REALTIME WEB SOCKETS CONNECTION WIHT SOCKET.IO
 */
 
-const speechToText = require('./speech-to-text-from-stream');
+const speechToText = require('./speech/fromStream');
 const textAnalysis = require('./textAnalysis');
 
 module.exports = function startWebsocketServer(server) {
