@@ -2,8 +2,9 @@
  * GET /
  * Home page.
  */
+
 exports.index = (req, res) => {
   res.render('home', {
-    title: 'Home'
+    status: 'API server is running: Thunderbirds are go!',
   });
 };

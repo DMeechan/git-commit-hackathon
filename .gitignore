@@ -21,9 +21,7 @@ public/css/main.css
 .nyc_output/*
 
 #Libraries from npm packages
-public/js/lib/bootstrap.min*
-public/js/lib/jquery.min*
-public/js/lib/popper.min*
+private/
 
 # API keys and secrets
 .env

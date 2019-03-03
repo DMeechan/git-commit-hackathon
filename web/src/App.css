@@ -2,6 +2,18 @@ body {
   background-color: rgb(240, 242, 245);
 }
 
+img {
+  margin-left: 10px;
+}
+
+.ttsField {
+  font-size: 22px;
+}
+
+.Rate {
+  margin-left: 10px;
+}
+
 .root {
   height: 100%;
 }
@@ -21,8 +33,7 @@ body {
 }
 
 .ant-btn-lg {
-  font-size: 24px;
-  height: 55px;
+  font-size: 18px;
 }
 
 .ant-steps-item {
