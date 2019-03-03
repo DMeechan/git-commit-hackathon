@@ -19,6 +19,7 @@ import {
   startRecording,
   stopRecording,
   sendTextForAnalysis,
+  getTotalClientsUpdates,
 } from './websockets';
 
 const { Option } = Select;
@@ -27,6 +28,15 @@ const Step = Steps.Step;
 class App extends Component {
   constructor() {
     super();
+
+    const self = this;
+    getTotalClientsUpdates(totalClients => {
+      console.log('totalClients lOG: ', totalClients);
+      self.setState({
+        totalClients,
+      });
+    });
+
     this.handleClick = this.handleClick.bind(this);
     this.state = {
       response: false,
@@ -35,6 +45,7 @@ class App extends Component {
       text: '',
       stars: 0,
       count: 0,
+      totalClients: 0,
       emotions: {
         anger: 0,
         joy: 0,
@@ -42,7 +53,7 @@ class App extends Component {
         fear: 0,
         disgust: 0,
       },
-      record: false
+      record: false,
     };
   }
 
@@ -57,7 +68,7 @@ class App extends Component {
       });
       self.forceUpdate();
 
-      startRecording(function (newText, dataFinal) {
+      startRecording(function(newText, dataFinal) {
         // console.log('newText: ', newText);
         self.setState({
           tempText: newText,
@@ -89,7 +100,10 @@ class App extends Component {
     }
 
     //if (this.state['recording'] === false && this.state['text'].length > 5) {
-    if (this.state['recording'] === false && (this.state['text'] + this.state['tempText']).length > 5) {
+    if (
+      this.state['recording'] === false &&
+      (this.state['text'] + this.state['tempText']).length > 5
+    ) {
       // message.warning("Recording saved. Analyzing data...");
       this.setState({
         count: 3,
@@ -144,18 +158,25 @@ class App extends Component {
   onData() {
     console.log('chunk of real-time data is');
   }
- 
+
   onStop() {
     console.log('recordedBlob is');
   }
- 
 
   componentDidMount() {
     const { endpoint } = this.state;
   }
-  
+
   render() {
-    const { count, recording, text, tempText, stars, emotions } = this.state;
+    const {
+      count,
+      recording,
+      text,
+      tempText,
+      stars,
+      emotions,
+      totalClients,
+    } = this.state;
     return (
       <div className="App">
         <Card
@@ -176,12 +197,13 @@ class App extends Component {
           {recording ? <this.StopButton /> : <this.StartButton />}
           <br />
           <ReactMic
-          record={this.state.record}
-          className="sound-wave"
-          onStop={null}
-          onData={null}
-          strokeColor="#000000"
-          backgroundColor="#FFFFFF" />
+            record={this.state.record}
+            className="sound-wave"
+            onStop={null}
+            onData={null}
+            strokeColor="#000000"
+            backgroundColor="#FFFFFF"
+          />
         </Card>
         <div
           style={{
@@ -274,6 +296,18 @@ class App extends Component {
               </Card>
             </Col>
           </Row>
+          <br />
+          {totalClients < 2 ? (
+            <span style={{ color: '#C0C0C0' }}>
+              Sadly there's only 1 person giving feedback right now (that's you)
+              :(
+            </span>
+          ) : (
+            <span style={{ color: '#C0C0C0' }}>
+              You have friends! There are {totalClients} people giving feedback
+              right now!
+            </span>
+          )}
         </div>
       </div>
     );

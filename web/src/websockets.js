@@ -2,7 +2,7 @@ import io from 'socket.io-client';
 import nlp from 'compromise';
 
 //connection to socket
-const url = "https://stacshack-2019.herokuapp.com";
+const url = 'https://stacshack-2019.herokuapp.com';
 // if (process.env.NODE_ENV == 'development' || process.env.NODE_ENV == 'dev') {
 //   url = 'http://localhost:8080';
 // } else {
@@ -346,3 +346,14 @@ socket.on('emotions', emotions => {
   console.log(emotionsCallback);
   emotionsCallback(emotions);
 });
+
+export function getTotalClientsUpdates(_totalClientsCallback) {
+  console.log('exported totalClientsCallback from web sockets ');
+  let totalClientsCallback = _totalClientsCallback;
+
+  socket.on('totalClientsConnected', totalClients => {
+    console.log('totalClients: ', totalClients);
+    totalClientsCallback(totalClients);
+  });
+  
+}
