@@ -10,8 +10,7 @@ const API_KEY = process.env.WATSON_API_KEY;
 console.log(
   API_KEY ? 'Found Watson API key' : 'ERROR: Could not find Watson API key :('
 );
-
-// Initialize Watson NLU client
+const round = require('../utils/round');
 const NaturalLanguageUnderstandingV1 = require('watson-developer-cloud/natural-language-understanding/v1.js');
 const naturalLanguageUnderstanding = new NaturalLanguageUnderstandingV1({
   version: '2018-11-16',
@@ -19,6 +18,13 @@ const naturalLanguageUnderstanding = new NaturalLanguageUnderstandingV1({
   url:
     'https://gateway-lon.watsonplatform.net/natural-language-understanding/api',
 });
+
+const roundHalf = num => Math.round(num * 2) / 2;
+
+function getRating(watsonScore) {
+  const rating = ((watsonScore + 1) / 2) * 5;
+  return roundHalf(rating);
+}
 
 function getParameters(text, target) {
   let response = {
@@ -72,7 +78,7 @@ async function requestEmotions(text) {
     for (let key in emotion) {
       if (emotion.hasOwnProperty(key)) {
         const value = emotion[key];
-        emotion[key] = round.twoDecimalPlaces(value) * 100;
+        emotion[key] = (round.twoDecimalPlaces(value) * 100).toFixed(0);;
       }
     }
 

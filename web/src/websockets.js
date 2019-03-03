@@ -2,7 +2,13 @@ import io from 'socket.io-client';
 import nlp from 'compromise';
 
 //connection to socket
-const url = 'http://localhost:8080';
+const url = "https://stacshack-2019.herokuapp.com";
+// if (process.env.NODE_ENV == 'development' || process.env.NODE_ENV == 'dev') {
+//   url = 'http://localhost:8080';
+// } else {
+//   url = 'https://stacshack-2019.herokuapp.com';
+// }
+
 // const socket = socketIOClient(url);
 const socket = io(url, {
   secure: false,
@@ -332,11 +338,11 @@ export function sendTextForAnalysis(text, _ratingCallback, _emotionsCallback) {
 
 socket.on('rating', rating => {
   console.log(rating);
-  console.log(ratingCallback)
-  ratingCallback(rating)
+  console.log(ratingCallback);
+  ratingCallback(rating);
 });
 socket.on('emotions', emotions => {
   console.log(emotions);
-  console.log(emotionsCallback)
-  emotionsCallback(emotions)
+  console.log(emotionsCallback);
+  emotionsCallback(emotions);
 });

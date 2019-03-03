@@ -5,6 +5,10 @@ const speechClient = new speech.SpeechClient();
  * GOOGLE CLOUD SETTINGS
  */
 
+const encoding = 'LINEAR16';
+const sampleRateHertz = 32000;
+const languageCode = 'en-GB'; // BCP-47 language code
+
 const request = {
     config: {
         encoding: 'LINEAR16',
@@ -12,9 +16,9 @@ const request = {
         languageCode: 'en-GB',
         profanityFilter: false,
         enableWordTimeOffsets: false,
-        speechContexts: [{
-            phrases: ["lecturer", "teacher", "university", "food"]
-        }] // add your own speech context for better recognition
+         speechContexts: [{
+             phrases: ["hackathon", "module", "lecturers", "knowledge", "explaining", "saying", "slides"]
+            }] // add your own speech context for better recognition
     },
     interimResults: true // realtime translation as the user is speaking
 };

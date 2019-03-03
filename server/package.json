@@ -29,6 +29,7 @@
     "morgan": "^1.9.1",
     "pug": "^2.0.3",
     "request": "^2.88.0",
+    "round": "^2.0.1",
     "socket.io": "^2.2.0",
     "watson-developer-cloud": "^3.18.1"
   },
