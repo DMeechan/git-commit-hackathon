@@ -1,7 +1,7 @@
 require('dotenv').config();
 
 const API_KEY = process.env.WATSON_API_KEY
-console.log("Using Watson API key:", API_KEY)
+console.log((API_KEY) ? "Found Watson API key" : "ERROR: Could not find Watson API key :(")
 
 const NaturalLanguageUnderstandingV1 = require('watson-developer-cloud/natural-language-understanding/v1.js');
 const naturalLanguageUnderstanding = new NaturalLanguageUnderstandingV1({
@@ -38,5 +38,5 @@ function request(text) {
 }
 
 
-const text = "I think this hackathon was pretty cool";
+const text = "I think this hackathon was pretty cool. Food was horrible.";
 request(text);
