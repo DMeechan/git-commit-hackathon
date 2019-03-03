@@ -21,7 +21,7 @@ const errorHandler = require('errorhandler');
 /**
  * DATABASE
  */
-const mongoose = require('mongoose');
+// const mongoose = require('mongoose');
 
 /**
  * Load environment variables from .env file, where API keys and passwords are configured.
@@ -43,9 +43,9 @@ const server = require('http').createServer(app);
 /**
  * Connect to MongoDB database
  */
-mongoose.set('useFindAndModify', false);
-mongoose.set('useCreateIndex', true);
-mongoose.set('useNewUrlParser', true);
+// mongoose.set('useFindAndModify', false);
+// mongoose.set('useCreateIndex', true);
+// mongoose.set('useNewUrlParser', true);
 // mongoose.connect(process.env.MONGODB_URI);
 // mongoose.connection.on('error', (err) => {
 //   console.error(err);
