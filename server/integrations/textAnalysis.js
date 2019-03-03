@@ -1,30 +1,35 @@
 require('dotenv').config();
 
-const API_KEY = process.env.WATSON_API_KEY
-console.log((API_KEY) ? "Found Watson API key" : "ERROR: Could not find Watson API key :(")
+const API_KEY = process.env.WATSON_API_KEY;
+console.log(
+  API_KEY ? 'Found Watson API key' : 'ERROR: Could not find Watson API key :('
+);
 
 const NaturalLanguageUnderstandingV1 = require('watson-developer-cloud/natural-language-understanding/v1.js');
 const naturalLanguageUnderstanding = new NaturalLanguageUnderstandingV1({
   version: '2018-11-16',
   iam_apikey: API_KEY,
-  url: 'https://gateway-lon.watsonplatform.net/natural-language-understanding/api'
+  url:
+    'https://gateway-lon.watsonplatform.net/natural-language-understanding/api',
 });
 
-const round = num => (Math.round(num * 100)) / 100;
+const round = num => Math.round(num * 100) / 100;
+const roundHalf = num => Math.round(num * 2) / 2;
 
 function getRating(watsonScore) {
-  const rating = (((watsonScore + 1) / 2) * 5);
-  return round(rating);
+  const rating = ((watsonScore + 1) / 2) * 5;
+  return roundHalf(rating);
 }
 
 function getParameters(text, target) {
   let response = {
-    text, features: {}
+    text,
+    features: {},
   };
 
   response['features'][target] = {
-    targets: text.split(' ')
-  }
+    targets: text.split(' '),
+  };
 
   return response;
 }
@@ -48,7 +53,6 @@ async function requestRating(text) {
     const score = response['sentiment']['document']['score'];
     if (!score) throw Error('emotion not found in Watson emotion response');
     return getRating(score);
-
   } catch (error) {
     return error;
   }
@@ -58,23 +62,21 @@ async function requestEmotions(text) {
   try {
     const parameters = getParameters(text, 'emotion');
     const response = await getAnalysis(parameters);
-    const { emotion } = response.emotion.document
+    const { emotion } = response.emotion.document;
     if (!emotion) throw Error('emotion not found in Watson emotion response');
 
     // Normalize the emotion object
     for (let key in emotion) {
       if (emotion.hasOwnProperty(key)) {
         const value = emotion[key];
-        emotion[key] = round(value);
+        emotion[key] = round(value) * 100;
       }
     }
 
     return emotion;
-
   } catch (error) {
     return error;
   }
-
 }
 
 // const text = "I think this hackathon was pretty cool. Food was horrible.";
@@ -83,5 +85,6 @@ async function requestEmotions(text) {
 //   .catch(error => console.log(error));
 
 module.exports = {
-  requestRating, requestEmotions
-}
+  requestRating,
+  requestEmotions,
+};
