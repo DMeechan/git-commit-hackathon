@@ -18,7 +18,7 @@ const request = {
         profanityFilter: false,
         enableWordTimeOffsets: false,
          speechContexts: [{
-             phrases: ["hackathon"]
+             phrases: ["hackathon", "module", "lecturers", "knowledge", "explaining", "saying", "slides"]
             }] // add your own speech context for better recognition
     },
     interimResults: true // realtime translation as the user is speaking

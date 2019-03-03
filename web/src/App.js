@@ -88,7 +88,8 @@ class App extends Component {
       });
     }
 
-    if (this.state['recording'] === false && this.state['text'].length > 5) {
+    //if (this.state['recording'] === false && this.state['text'].length > 5) {
+    if (this.state['recording'] === false && (this.state['text'] + this.state['tempText']).length > 5) {
       // message.warning("Recording saved. Analyzing data...");
       this.setState({
         count: 3,
