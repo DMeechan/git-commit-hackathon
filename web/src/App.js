@@ -4,8 +4,8 @@ import {
   Select,
   InputNumber,
   DatePicker,
-  Switch,
-  Icon,
+  Rate,
+  Progress,
   Button,
   Card,
   Row,
@@ -14,6 +14,7 @@ import {
 } from 'antd';
 import './App.css';
 import { startRecording, stopRecording } from './websockets';
+import { timingSafeEqual } from 'crypto';
 
 const { Option } = Select;
 const Step = Steps.Step;
@@ -40,18 +41,31 @@ class App extends Component {
       recording: false,
       tempText: '',
       text: '',
+      stars: 5,
+      emotion: {
+        anger: 0,
+        joy: 0,
+        sadness: 0,
+        fear: 0,
+        disgust: 0,
+      },
     };
     this.count = 0;
   }
 
   handleClick = () => {
     const self = this;
+    
     if (!this.state['recording']) {
+      self.state.text = '';
+      self.state.tempText = '';
+      self.forceUpdate();
       startRecording(function(newText, dataFinal) {
         // console.log('newText: ', newText);
         self.state.tempText = newText;
         if(dataFinal) {
           self.state.text = self.state.text + newText;
+          self.state.tempText = '';
         }
         self.forceUpdate();
       });
@@ -96,7 +110,7 @@ class App extends Component {
   }
 
   render() {
-    const { response, recording, text, tempText } = this.state;
+    const { response, recording, text, tempText, stars, emotion } = this.state;
     return (
       <div className="App">
         <Card
@@ -124,7 +138,7 @@ class App extends Component {
           }}
         >
           <Row gutter={16}>
-            <Col span={14}>
+            <Col span={16}>
               <Card
                 title={
                   <h2 style={{ marginBottom: '0px' }}>
@@ -132,16 +146,15 @@ class App extends Component {
                   </h2>
                 }
                 bordered={false}
-                style={{ minHeight: '500px' }}
+                style={{ minHeight: '560px' }}
               >
-                <div>
-                  <p>Temporary Text: {tempText}</p>
-                  <span id="speechToTextField">Final Text: {text}</span>
+                <div className="ttsField">
+                  <span id="speechToTextField" style={{ color: '#000000' }}>{text} <span style={{ color: '#C0C0C0' }}>{tempText}</span></span>
                   <p id="result-text" />
                 </div>
               </Card>
             </Col>
-            <Col span={10}>
+            <Col span={8}>
               <Card
                 title={
                   <h2 style={{ marginBottom: '0px' }}>
@@ -149,9 +162,39 @@ class App extends Component {
                   </h2>
                 }
                 bordered={false}
-                style={{ minHeight: '500px' }}
+                style={{ minHeight: '560px' }}
               >
-                <p>Card content</p>
+                <p><b>Feedback Sentiment</b><br></br><Rate disabled defaultValue={stars} /></p>
+                
+                <p>
+                Anger
+                <img width='25px' height='25px' src='https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/google/146/angry-face_1f620.png'></img> 
+                
+                <Progress percent={emotion.anger} />
+                </p>
+                <p>
+                Joy
+                <img width='25px' height='25px' src='https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/google/146/face-with-tears-of-joy_1f602.png'></img> 
+                
+                <Progress percent={emotion.joy} />
+                </p>
+                <p>
+                Sadness 
+                <img width='25px' height='25px' src='https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/google/146/crying-face_1f622.png'></img> 
+                <Progress percent={emotion.sadness} />
+                </p>
+                <p>
+                Fear
+                <img width='25px' height='25px' src='https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/google/146/fearful-face_1f628.png'></img> 
+                
+                <Progress percent={emotion.fear} />
+                </p>
+                <p>
+                Disgust
+                <img width='25px' height='25px' src='https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/google/146/nauseated-face_1f922.png'></img> 
+                
+                <Progress percent={emotion.disgust} />
+                </p>
               </Card>
             </Col>
           </Row>

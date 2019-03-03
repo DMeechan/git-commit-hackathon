@@ -26,7 +26,11 @@ const errorHandler = require('errorhandler');
  * UTILITIES
  */
 const path = require('path');
-const dotenv = require('dotenv');
+
+/**
+ * Load environment variables from .env file, where API keys and passwords are configured.
+ */
+require('dotenv').config();
 
 
 /**
@@ -34,12 +38,6 @@ const dotenv = require('dotenv');
  */
 const upload = multer({ dest: path.join(__dirname, 'uploads') }); // file uploads
 // const mongoose = require('mongoose'); // MongoDB database
-
-
-/**
- * Load environment variables from .env file, where API keys and passwords are configured.
- */
-dotenv.load({ path: '.env.example' });
 
 /**
  * Controllers (route handlers).

@@ -7,7 +7,7 @@ const speechClient = new speech.SpeechClient();
  */
 
 const encoding = 'LINEAR16';
-const sampleRateHertz = 16000;
+const sampleRateHertz = 32000;
 const languageCode = 'en-US'; // BCP-47 language code
 
 const request = {
