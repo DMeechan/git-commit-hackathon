@@ -46,9 +46,16 @@ function requestEmotions(text){
       }
     }
   }
+  naturalLanguageUnderstanding.analyze(parameters, function (err, response) {
+    if (err) {
+      console.log('error:', err);
+    } else {
+      console.log(response)
+    }
+  });
 
 }
 
 
 const text = "I think this hackathon was pretty cool. Food was horrible.";
-console.log(requestRating(text));
+requestEmotions(text);
