@@ -3,6 +3,7 @@
 */
 
 const speechToText = require('./speech-to-text-from-stream');
+const textAnalysis = require('./textAnalytics');
 
 module.exports = function startWebsocketServer(server) {
     const io = require('socket.io')(server)
@@ -35,5 +36,10 @@ module.exports = function startWebsocketServer(server) {
             // console.log('Uploading binary data of size:', bufferData.length);
             speechToText.write(recognizeStream, bufferData);
         });
+
+        client.on('getSentimentAnalysis', text => {
+            const score = textAnalysis.request(text);
+            client.emit('sentimentAnalysis', score)
+        })
     });
 }

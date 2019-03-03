@@ -37,6 +37,9 @@ function request(text) {
   });
 }
 
-
 const text = "I think this hackathon was pretty cool. Food was horrible.";
 request(text);
+
+module.exports = {
+  request
+}
