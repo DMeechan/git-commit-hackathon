@@ -15,7 +15,19 @@ function getRating(watsonScore) {
   return Math.round(rating * 100) / 100;
 }
 
-function requestRating(text) {
+async function getAnalysis(parameters) {
+  return new Promise((resove, reject) => {
+    naturalLanguageUnderstanding.analyze(parameters, (error, response) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(response);
+      }
+    });
+  });
+}
+
+async function requestRating(text) {
   const parameters = {
     text: text,
     features: {
@@ -23,30 +35,27 @@ function requestRating(text) {
         targets: text.split(' ')
       }
     }
-
   };
 
-  naturalLanguageUnderstanding.analyze(parameters, function (err, response) {
-    if (err) {
-      console.log('error:', err);
-    } else {
-      let score = response['sentiment']['document']['score'];
-      score = getRating(score);
-      return (score);
-    }
-  });
+  try {
+    const response = await getAnalysis(parameters);
+    const score = response['sentiment']['document']['score'];
+    return getRating(score);
+    
+  } catch (error) {
+    return error;
+  }
 }
 
-function requestEmotions(text){
+function requestEmotions(text) {
   const parameters = {
     text: text,
-    features:{
-      emotion:{
+    features: {
+      emotion: {
         targets: text.split(' ')
       }
     }
   }
-
 }
 
 
