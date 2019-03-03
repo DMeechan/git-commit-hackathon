@@ -4,8 +4,8 @@ import {
   Select,
   InputNumber,
   DatePicker,
-  Switch,
-  Icon,
+  Rate,
+  Progress,
   Button,
   Card,
   Row,
@@ -25,21 +25,34 @@ class App extends Component {
     this.state = {
       response: false,
       recording: false,
+      tempText: '',
       text: '',
-      rating: null,
-      emotions: null
+      stars: 5,
+      emotions: {
+        anger: 0,
+        joy: 0,
+        sadness: 0,
+        fear: 0,
+        disgust: 0,
+      },
     };
     this.count = 0;
   }
 
   handleClick = () => {
     const self = this;
-    let { recording, text } = this.state;
-
-    if (!recording) {
-      startRecording(function (newText, dataFinal) {
+    
+    if (!this.state['recording']) {
+      self.state.text = '';
+      self.state.tempText = '';
+      self.forceUpdate();
+      startRecording(function(newText, dataFinal) {
         // console.log('newText: ', newText);
-        self.state.text = newText;
+        self.state.tempText = newText;
+        if(dataFinal) {
+          self.state.text = self.state.text + newText;
+          self.state.tempText = '';
+        }
         self.forceUpdate();
       });
     } else {
@@ -55,7 +68,7 @@ class App extends Component {
 
     if (this.state['recording'] === false && this.state['text'].length > 5) {
       sendTextForAnalysis(this.state.text, rating => {
-        self.state.rating = rating;
+        self.state.stars = rating;
       }, emotions => {
         self.state.emotions = emotions;
       });
@@ -91,7 +104,7 @@ class App extends Component {
   }
 
   render() {
-    const { response, recording, text } = this.state;
+    const { response, recording, text, tempText, stars, emotions } = this.state;
     return (
       <div className="App">
         <Card
@@ -110,7 +123,6 @@ class App extends Component {
           </Steps>
           <br />
           {recording ? <this.StopButton /> : <this.StartButton />}
-          <button style={{ marginLeft: '10px' }}>Reset</button>
         </Card>
         <div
           style={{
@@ -120,7 +132,7 @@ class App extends Component {
           }}
         >
           <Row gutter={16}>
-            <Col span={14}>
+            <Col span={16}>
               <Card
                 title={
                   <h2 style={{ marginBottom: '0px' }}>
@@ -128,15 +140,15 @@ class App extends Component {
                   </h2>
                 }
                 bordered={false}
-                style={{ minHeight: '500px' }}
+                style={{ minHeight: '560px' }}
               >
-                <div>
-                  <span id="speechToTextField">{text}</span>
+                <div className="ttsField">
+                  <span id="speechToTextField" style={{ color: '#000000' }}>{text} <span style={{ color: '#C0C0C0' }}>{tempText}</span></span>
                   <p id="result-text" />
                 </div>
               </Card>
             </Col>
-            <Col span={10}>
+            <Col span={8}>
               <Card
                 title={
                   <h2 style={{ marginBottom: '0px' }}>
@@ -144,9 +156,39 @@ class App extends Component {
                   </h2>
                 }
                 bordered={false}
-                style={{ minHeight: '500px' }}
+                style={{ minHeight: '560px' }}
               >
-                <p>Card content</p>
+                <p><b>Feedback Sentiment</b><br></br><Rate disabled defaultValue={stars} /></p>
+                
+                <p>
+                Anger
+                <img width='25px' height='25px' src='https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/google/146/angry-face_1f620.png'></img> 
+                
+                <Progress percent={emotions.anger} />
+                </p>
+                <p>
+                Joy
+                <img width='25px' height='25px' src='https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/google/146/face-with-tears-of-joy_1f602.png'></img> 
+                
+                <Progress percent={emotions.joy} />
+                </p>
+                <p>
+                Sadness 
+                <img width='25px' height='25px' src='https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/google/146/crying-face_1f622.png'></img> 
+                <Progress percent={emotions.sadness} />
+                </p>
+                <p>
+                Fear
+                <img width='25px' height='25px' src='https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/google/146/fearful-face_1f628.png'></img> 
+                
+                <Progress percent={emotions.fear} />
+                </p>
+                <p>
+                Disgust
+                <img width='25px' height='25px' src='https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/google/146/nauseated-face_1f922.png'></img> 
+                
+                <Progress percent={emotions.disgust} />
+                </p>
               </Card>
             </Col>
           </Row>

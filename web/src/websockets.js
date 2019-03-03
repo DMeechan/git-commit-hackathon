@@ -60,7 +60,7 @@ function initRecording() {
 function microphoneProcess(e) {
   var left = e.inputBuffer.getChannelData(0);
   // var left16 = convertFloat32ToInt16(left); // old 32 to 16 function
-  var left16 = downsampleBuffer(left, 44100, 16000);
+  var left16 = downsampleBuffer(left, 44100, 32000);
   socket.emit('binaryData', left16);
 }
 
