@@ -3,7 +3,7 @@ import {
   Form,
   Select,
   InputNumber,
-  DatePicker,
+  Icon,
   Rate,
   Progress,
   Button,
@@ -32,15 +32,15 @@ class App extends Component {
       tempText: '',
       text: '',
       stars: 0,
+      count: 0,
       emotions: {
         anger: 0,
         joy: 0,
         sadness: 0,
         fear: 0,
         disgust: 0,
-      },
+      }
     };
-    this.count = 0;
   }
 
   handleClick = () => {
@@ -53,7 +53,7 @@ class App extends Component {
       });
       self.forceUpdate();
 
-      startRecording(function(newText, dataFinal) {
+      startRecording(function (newText, dataFinal) {
         // console.log('newText: ', newText);
         self.setState({
           tempText: newText,
@@ -65,7 +65,6 @@ class App extends Component {
             tempText: '',
           }));
         }
-
         self.forceUpdate();
       });
     } else {
@@ -73,7 +72,7 @@ class App extends Component {
     }
 
     this.state['recording'] = !this.state['recording'];
-    if (this.count < 4) {
+    if (this.state.count < 4) {
       this.setState((state, props) => ({
         count: state.count + 1,
       }));
@@ -84,6 +83,9 @@ class App extends Component {
     }
 
     if (this.state['recording'] === false && this.state['text'].length > 5) {
+      this.setState({
+        count: 3,
+      });
       sendTextForAnalysis(
         this.state.text,
         rating => {
@@ -97,6 +99,9 @@ class App extends Component {
           });
         }
       );
+      this.setState({
+        count: 4,
+      });
     }
 
     this.forceUpdate();
@@ -129,7 +134,7 @@ class App extends Component {
   }
 
   render() {
-    const { response, recording, text, tempText, stars, emotions } = this.state;
+    const { count, recording, text, tempText, stars, emotions } = this.state;
     return (
       <div className="App">
         <Card
@@ -140,7 +145,7 @@ class App extends Component {
           }
         >
           <p>Please describe your experience.</p>
-          <Steps current={this.count}>
+          <Steps current={count}>
             <Step title="Start" />
             <Step title="Recording" />
             <Step title="Processing" />
@@ -165,7 +170,7 @@ class App extends Component {
                   </h2>
                 }
                 bordered={false}
-                style={{ minHeight: '560px' }}
+                style={{ minHeight: '500px' }}
               >
                 <div className="ttsField">
                   <span id="speechToTextField" style={{ color: '#000000' }}>
@@ -183,7 +188,7 @@ class App extends Component {
                   </h2>
                 }
                 bordered={false}
-                style={{ minHeight: '560px' }}
+                style={{ minHeight: '500px' }}
               >
                 <span>
                   <b>Feedback Sentiment</b>
