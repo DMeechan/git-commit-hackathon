@@ -10,9 +10,7 @@ const naturalLanguageUnderstanding = new NaturalLanguageUnderstandingV1({
   url: 'https://gateway-lon.watsonplatform.net/natural-language-understanding/api'
 });
 
-function round(num) {
-  return (Math.round(num * 100)) / 100;
-}
+const round = num => (Math.round(num * 100)) / 100;
 
 function getRating(watsonScore) {
   const rating = (((watsonScore + 1) / 2) * 5);
@@ -79,11 +77,10 @@ async function requestEmotions(text) {
 
 }
 
-
-const text = "I think this hackathon was pretty cool. Food was horrible.";
-requestEmotions(text)
-  .then(result => console.log(result))
-  .catch(error => console.log(error));
+// const text = "I think this hackathon was pretty cool. Food was horrible.";
+// requestEmotions(text)
+//   .then(result => console.log(result))
+//   .catch(error => console.log(error));
 
 module.exports = {
   requestRating, requestEmotions
