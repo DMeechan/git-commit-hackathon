@@ -15,7 +15,7 @@ function getRating(watsonScore) {
   return Math.round(rating * 100) / 100;
 }
 
-function request(text) {
+function requestRating(text) {
   const parameters = {
     text: text,
     'features': {
@@ -37,6 +37,11 @@ function request(text) {
   });
 }
 
+function requestEmotions(text){
+
+
+}
+
 
 const text = "I think this hackathon was pretty cool. Food was horrible.";
-request(text);
+requestRating(text);
