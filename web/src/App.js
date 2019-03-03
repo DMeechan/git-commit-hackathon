@@ -59,6 +59,20 @@ class App extends Component {
           tempText: newText,
         });
 
+        sendTextForAnalysis(
+          this.state.text + newText,
+          rating => {
+            self.setState({
+              stars: rating,
+            });
+          },
+          emotions => {
+            self.setState({
+              emotions,
+            });
+          }
+        );
+
         if (dataFinal) {
           self.setState((state, props) => ({
             text: state.text + newText,
