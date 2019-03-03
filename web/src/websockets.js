@@ -18,7 +18,9 @@ let bufferSize = 2048,
   processor,
   input,
   globalStream,
-  outputCallback;
+  outputCallback,
+  ratingCallback,
+  emotionsCallback;
 
 // variables
 let resultText = document.getElementById('result-text'),
@@ -42,12 +44,12 @@ function initRecording() {
   processor.connect(context.destination);
   context.resume();
 
-  var handleSuccess = function(stream) {
+  var handleSuccess = function (stream) {
     globalStream = stream;
     input = context.createMediaStreamSource(stream);
     input.connect(processor);
 
-    processor.onaudioprocess = function(e) {
+    processor.onaudioprocess = function (e) {
       microphoneProcess(e);
     };
   };
@@ -93,7 +95,7 @@ export function stopRecording() {
 
   input.disconnect(processor);
   processor.disconnect(context.destination);
-  context.close().then(function() {
+  context.close().then(function () {
     input = null;
     processor = null;
     context = null;
@@ -115,71 +117,71 @@ export function stopRecording() {
 }
 
 //================= SOCKET IO =================
-socket.on('connect', function(data) {
+socket.on('connect', function (data) {
   socket.emit('join', 'Server Connected to Client');
 });
 
-socket.on('messages', function(data) {
+socket.on('messages', function (data) {
   console.log(data);
 });
 
-socket.on('speechData', function(data) {
+socket.on('speechData', function (data) {
   // console.log(data.results[0].alternatives[0].transcript);
   let dataFinal = undefined || data.results[0].isFinal;
   const transcript = data.results[0].alternatives[0].transcript;
   outputCallback(transcript, dataFinal)
 
-//   if (dataFinal === false) {
-//     // console.log(resultText.lastElementChild);
-//     if (removeLastSentence) {
-//       resultText.lastElementChild.remove();
-//     }
-//     removeLastSentence = true;
+  //   if (dataFinal === false) {
+  //     // console.log(resultText.lastElementChild);
+  //     if (removeLastSentence) {
+  //       resultText.lastElementChild.remove();
+  //     }
+  //     removeLastSentence = true;
 
-//     //add empty span
-//     let empty = document.getElementById('speechToTextField');
-//     resultText.appendChild(empty);
+  //     //add empty span
+  //     let empty = document.getElementById('speechToTextField');
+  //     resultText.appendChild(empty);
 
-//     //add children to empty span
-//     let edit = addTimeSettingsInterim(data);
+  //     //add children to empty span
+  //     let edit = addTimeSettingsInterim(data);
 
-//     for (var i = 0; i < edit.length; i++) {
-//       resultText.lastElementChild.appendChild(edit[i]);
-//       resultText.lastElementChild.appendChild(
-//         document.createTextNode('\u00A0')
-//       );
-//     }
-//   } else if (dataFinal === true) {
-//     resultText.lastElementChild.remove();
+  //     for (var i = 0; i < edit.length; i++) {
+  //       resultText.lastElementChild.appendChild(edit[i]);
+  //       resultText.lastElementChild.appendChild(
+  //         document.createTextNode('\u00A0')
+  //       );
+  //     }
+  //   } else if (dataFinal === true) {
+  //     resultText.lastElementChild.remove();
 
-//     //add empty span
-//     let empty = document.getElementById('speechToTextField');
-//     resultText.appendChild(empty);
+  //     //add empty span
+  //     let empty = document.getElementById('speechToTextField');
+  //     resultText.appendChild(empty);
 
-//     //add children to empty span
-//     let edit = addTimeSettingsFinal(data);
-//     for (var i = 0; i < edit.length; i++) {
-//       if (i === 0) {
-//         edit[i].innerText = capitalize(edit[i].innerText);
-//       }
-//       resultText.lastElementChild.appendChild(edit[i]);
+  //     //add children to empty span
+  //     let edit = addTimeSettingsFinal(data);
+  //     for (var i = 0; i < edit.length; i++) {
+  //       if (i === 0) {
+  //         edit[i].innerText = capitalize(edit[i].innerText);
+  //       }
+  //       resultText.lastElementChild.appendChild(edit[i]);
 
-//       if (i !== edit.length - 1) {
-//         resultText.lastElementChild.appendChild(
-//           document.createTextNode('\u00A0')
-//         );
-//       }
-//     }
-//     resultText.lastElementChild.appendChild(
-//       document.createTextNode('\u002E\u00A0')
-//     );
+  //       if (i !== edit.length - 1) {
+  //         resultText.lastElementChild.appendChild(
+  //           document.createTextNode('\u00A0')
+  //         );
+  //       }
+  //     }
+  //     resultText.lastElementChild.appendChild(
+  //       document.createTextNode('\u002E\u00A0')
+  //     );
 
-//     console.log("Google Speech sent 'final' Sentence.");
-//     // finalWord = true;
-//     // endButton.disabled = false;
+  //     console.log("Google Speech sent 'final' Sentence.");
+  //     // finalWord = true;
+  //     // endButton.disabled = false;
 
-//     removeLastSentence = false;
-//   }
+  //     removeLastSentence = false;
+  //   }
 });
 
 //================= Juggling Spans for nlp Coloring =================
@@ -261,7 +263,7 @@ function addTimeSettingsFinal(speechData) {
   return words_n_time;
 }
 
-window.onbeforeunload = function() {
+window.onbeforeunload = function () {
   if (streamStreaming) {
     socket.emit('endAudioStream', '');
   }
@@ -282,7 +284,7 @@ function convertFloat32ToInt16(buffer) {
   return buf.buffer;
 }
 
-var downsampleBuffer = function(buffer, sampleRate, outSampleRate) {
+var downsampleBuffer = function (buffer, sampleRate, outSampleRate) {
   if (outSampleRate == sampleRate) {
     return buffer;
   }
@@ -316,3 +318,17 @@ function capitalize(s) {
   }
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
+
+/**
+ * GET RATING AND EMOTIONS FROM SERVER
+ */
+
+export function sendTextForAnalysis(text, _ratingCallback, _emotionsCallback) {
+  socket.emit('getRating', text);
+  socket.emit('getEmotions', text);
+  ratingCallback = _ratingCallback
+  emotionsCallback = _emotionsCallback
+}
+
+socket.on('rating', ratingCallback);
+socket.on('emotions', emotionsCallback);

@@ -3,7 +3,7 @@
 */
 
 const speechToText = require('./speech-to-text-from-stream');
-const textAnalysis = require('./textAnalytics');
+const textAnalysis = require('./textAnalysis');
 
 module.exports = function startWebsocketServer(server) {
     const io = require('socket.io')(server)
@@ -37,9 +37,14 @@ module.exports = function startWebsocketServer(server) {
             speechToText.write(recognizeStream, bufferData);
         });
 
-        client.on('getSentimentAnalysis', text => {
-            const score = textAnalysis.request(text);
-            client.emit('sentimentAnalysis', score)
+        client.on('getRating', async (text) => {
+            const rating = await textAnalysis.requestRating(text);
+            client.emit('rating', rating)
+        })
+
+        client.on('getEmotions', async (text) => {
+            const emotions = await textAnalysis.requestEmotions(text);
+            client.emit('emotions', emotions)
         })
     });
 }

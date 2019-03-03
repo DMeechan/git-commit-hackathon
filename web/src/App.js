@@ -13,23 +13,10 @@ import {
   Steps,
 } from 'antd';
 import './App.css';
-import { startRecording, stopRecording } from './websockets';
+import { startRecording, stopRecording, sendTextForAnalysis } from './websockets';
 
 const { Option } = Select;
 const Step = Steps.Step;
-
-/*
-<div style={{ textAlign: "center" }}>
-{response
-  ? <p>
-      Websocket response: {response}
-    </p>
-  : <p>Loading...</p>}
-  <div>
-    {recording ? <StopButton /> : <StartButton />}
-  </div>
-</div>
-*/
 
 class App extends Component {
   constructor() {
@@ -39,14 +26,18 @@ class App extends Component {
       response: false,
       recording: false,
       text: '',
+      rating: null,
+      emotions: null
     };
     this.count = 0;
   }
 
   handleClick = () => {
     const self = this;
-    if (!this.state['recording']) {
-      startRecording(function(newText, dataFinal) {
+    let { recording, text } = this.state;
+
+    if (!recording) {
+      startRecording(function (newText, dataFinal) {
         // console.log('newText: ', newText);
         self.state.text = newText;
         self.forceUpdate();
@@ -60,6 +51,14 @@ class App extends Component {
       this.count += 1;
     } else {
       this.count = 0;
+    }
+
+    if (this.state['recording'] === false && this.state['text'].length > 5) {
+      sendTextForAnalysis(this.state.text, rating => {
+        self.state.rating = rating;
+      }, emotions => {
+        self.state.emotions = emotions;
+      });
     }
 
     this.forceUpdate();
