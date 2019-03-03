@@ -26,6 +26,7 @@ class App extends Component {
   constructor() {
     super();
     this.handleClick = this.handleClick.bind(this);
+    this.analyseText = this.analyseText.bind(this);
     this.state = {
       response: false,
       recording: false,
@@ -39,7 +40,7 @@ class App extends Component {
         sadness: 0,
         fear: 0,
         disgust: 0,
-      }
+      },
     };
   }
 
@@ -53,25 +54,13 @@ class App extends Component {
       });
       self.forceUpdate();
 
-      startRecording(function (newText, dataFinal) {
+      startRecording(function(newText, dataFinal) {
         // console.log('newText: ', newText);
         self.setState({
           tempText: newText,
         });
 
-        sendTextForAnalysis(
-          this.state.text + newText,
-          rating => {
-            self.setState({
-              stars: rating,
-            });
-          },
-          emotions => {
-            self.setState({
-              emotions,
-            });
-          }
-        );
+        self.analyseText();
 
         if (dataFinal) {
           self.setState((state, props) => ({
@@ -88,7 +77,7 @@ class App extends Component {
     this.state['recording'] = !this.state['recording'];
     if (this.state.count < 4) {
       this.setState((state, props) => ({
-        count: state.count + 1,
+        count: self.state.count + 1,
       }));
     } else {
       this.setState({
@@ -96,23 +85,12 @@ class App extends Component {
       });
     }
 
+    // Send final text for analysis
     if (this.state['recording'] === false && this.state['text'].length > 5) {
       this.setState({
         count: 3,
       });
-      sendTextForAnalysis(
-        this.state.text,
-        rating => {
-          self.setState({
-            stars: rating,
-          });
-        },
-        emotions => {
-          self.setState({
-            emotions,
-          });
-        }
-      );
+      this.analyseText();
       this.setState({
         count: 4,
       });
@@ -121,6 +99,24 @@ class App extends Component {
     this.forceUpdate();
   };
 
+  analyseText = () => {
+    const self = this;
+    const { text } = this.state;
+    sendTextForAnalysis(
+      text,
+      rating => {
+        self.setState({
+          stars: rating,
+        });
+      },
+      emotions => {
+        self.setState({
+          emotions,
+        });
+      }
+    );
+  }
+
   StartButton = () => (
     <Button
       type="primary"
@@ -128,7 +124,7 @@ class App extends Component {
       id="startRecButton"
       onClick={this.handleClick}
     >
-      Start Recording
+      Start Recording Feedback
     </Button>
   );
 
@@ -142,10 +138,6 @@ class App extends Component {
       Stop Recording
     </Button>
   );
-
-  componentDidMount() {
-    const { endpoint } = this.state;
-  }
 
   render() {
     const { count, recording, text, tempText, stars, emotions } = this.state;

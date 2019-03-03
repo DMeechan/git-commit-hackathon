@@ -332,11 +332,9 @@ export function sendTextForAnalysis(text, _ratingCallback, _emotionsCallback) {
 
 socket.on('rating', rating => {
   console.log(rating);
-  console.log(ratingCallback)
   ratingCallback(rating)
 });
 socket.on('emotions', emotions => {
   console.log(emotions);
-  console.log(emotionsCallback)
   emotionsCallback(emotions)
 });
