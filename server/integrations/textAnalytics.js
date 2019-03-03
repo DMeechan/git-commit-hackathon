@@ -15,12 +15,12 @@ function getRating(watsonScore) {
   return Math.round(rating * 100) / 100;
 }
 
-function request(text) {
+function requestRating(text) {
   const parameters = {
     text: text,
-    'features': {
-      'sentiment': {
-        'targets': text.split(' ')
+    features: {
+      sentiment: {
+        targets: text.split(' ')
       }
     }
 
@@ -32,14 +32,23 @@ function request(text) {
     } else {
       let score = response['sentiment']['document']['score'];
       score = getRating(score);
-      console.log(score);
+      return (score);
     }
   });
 }
 
-const text = "I think this hackathon was pretty cool. Food was horrible.";
-request(text);
+function requestEmotions(text){
+  const parameters = {
+    text: text,
+    features:{
+      emotion:{
+        targets: text.split(' ')
+      }
+    }
+  }
 
-module.exports = {
-  request
 }
+
+
+const text = "I think this hackathon was pretty cool. Food was horrible.";
+console.log(requestRating(text));
