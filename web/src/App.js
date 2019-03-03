@@ -4,8 +4,8 @@ import {
   Select,
   InputNumber,
   DatePicker,
-  Switch,
-  Icon,
+  Rate,
+  Progress,
   Button,
   Card,
   Row,
@@ -13,23 +13,14 @@ import {
   Steps,
 } from 'antd';
 import './App.css';
-import { startRecording, stopRecording } from './websockets';
+import {
+  startRecording,
+  stopRecording,
+  sendTextForAnalysis,
+} from './websockets';
 
 const { Option } = Select;
 const Step = Steps.Step;
-
-/*
-<div style={{ textAlign: "center" }}>
-{response
-  ? <p>
-      Websocket response: {response}
-    </p>
-  : <p>Loading...</p>}
-  <div>
-    {recording ? <StopButton /> : <StartButton />}
-  </div>
-</div>
-*/
 
 class App extends Component {
   constructor() {
@@ -38,17 +29,43 @@ class App extends Component {
     this.state = {
       response: false,
       recording: false,
+      tempText: '',
       text: '',
+      stars: 0,
+      emotions: {
+        anger: 0,
+        joy: 0,
+        sadness: 0,
+        fear: 0,
+        disgust: 0,
+      },
     };
     this.count = 0;
   }
 
   handleClick = () => {
     const self = this;
+
     if (!this.state['recording']) {
+      self.setState({
+        text: '',
+        tempText: '',
+      });
+      self.forceUpdate();
+
       startRecording(function(newText, dataFinal) {
-        console.log('newText: ', newText, dataFinal);
-        self.state.text = newText;
+        // console.log('newText: ', newText);
+        self.setState({
+          tempText: newText,
+        });
+
+        if (dataFinal) {
+          self.setState((state, props) => ({
+            text: state.text + newText,
+            tempText: '',
+          }));
+        }
+
         self.forceUpdate();
       });
     } else {
@@ -57,9 +74,29 @@ class App extends Component {
 
     this.state['recording'] = !this.state['recording'];
     if (this.count < 4) {
-      this.count += 1;
+      this.setState((state, props) => ({
+        count: state.count + 1,
+      }));
     } else {
-      this.count = 0;
+      this.setState({
+        count: 0,
+      });
+    }
+
+    if (this.state['recording'] === false && this.state['text'].length > 5) {
+      sendTextForAnalysis(
+        this.state.text,
+        rating => {
+          self.setState({
+            stars: rating,
+          });
+        },
+        emotions => {
+          self.setState({
+            emotions,
+          });
+        }
+      );
     }
 
     this.forceUpdate();
@@ -92,7 +129,7 @@ class App extends Component {
   }
 
   render() {
-    const { response, recording, text } = this.state;
+    const { response, recording, text, tempText, stars, emotions } = this.state;
     return (
       <div className="App">
         <Card
@@ -111,7 +148,6 @@ class App extends Component {
           </Steps>
           <br />
           {recording ? <this.StopButton /> : <this.StartButton />}
-          <button style={{ marginLeft: '10px' }}>Reset</button>
         </Card>
         <div
           style={{
@@ -121,7 +157,7 @@ class App extends Component {
           }}
         >
           <Row gutter={16}>
-            <Col span={14}>
+            <Col span={16}>
               <Card
                 title={
                   <h2 style={{ marginBottom: '0px' }}>
@@ -129,15 +165,17 @@ class App extends Component {
                   </h2>
                 }
                 bordered={false}
-                style={{ minHeight: '500px' }}
+                style={{ minHeight: '560px' }}
               >
-                <div>
-                  <span id="speechToTextField">{text}</span>
+                <div className="ttsField">
+                  <span id="speechToTextField" style={{ color: '#000000' }}>
+                    {text} <span style={{ color: '#C0C0C0' }}>{tempText}</span>
+                  </span>
                   <p id="result-text" />
                 </div>
               </Card>
             </Col>
-            <Col span={10}>
+            <Col span={8}>
               <Card
                 title={
                   <h2 style={{ marginBottom: '0px' }}>
@@ -145,9 +183,60 @@ class App extends Component {
                   </h2>
                 }
                 bordered={false}
-                style={{ minHeight: '500px' }}
+                style={{ minHeight: '560px' }}
               >
-                <p>Card content</p>
+                <span>
+                  <b>Feedback Sentiment</b>
+                  <br />
+                  <Rate allowHalf disabled defaultValue={0} value={stars} />
+                </span>
+                <br />
+                <br />
+                <span>
+                  Anger
+                  <img
+                    width="25px"
+                    height="25px"
+                    src="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/google/146/angry-face_1f620.png"
+                  />
+                  <Progress percent={emotions.anger} />
+                </span>
+                <span>
+                  Joy
+                  <img
+                    width="25px"
+                    height="25px"
+                    src="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/google/146/face-with-tears-of-joy_1f602.png"
+                  />
+                  <Progress percent={emotions.joy} />
+                </span>
+                <span>
+                  Sadness
+                  <img
+                    width="25px"
+                    height="25px"
+                    src="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/google/146/crying-face_1f622.png"
+                  />
+                  <Progress percent={emotions.sadness} />
+                </span>
+                <span>
+                  Fear
+                  <img
+                    width="25px"
+                    height="25px"
+                    src="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/google/146/fearful-face_1f628.png"
+                  />
+                  <Progress percent={emotions.fear} />
+                </span>
+                <span>
+                  Disgust
+                  <img
+                    width="25px"
+                    height="25px"
+                    src="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/google/146/nauseated-face_1f922.png"
+                  />
+                  <Progress percent={emotions.disgust} />
+                </span>
               </Card>
             </Col>
           </Row>

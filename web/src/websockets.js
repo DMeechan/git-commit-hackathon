@@ -18,7 +18,9 @@ let bufferSize = 2048,
   processor,
   input,
   globalStream,
-  outputCallback;
+  outputCallback,
+  ratingCallback,
+  emotionsCallback;
 
 // variables
 let resultText = document.getElementById('result-text'),
@@ -58,7 +60,7 @@ function initRecording() {
 function microphoneProcess(e) {
   var left = e.inputBuffer.getChannelData(0);
   // var left16 = convertFloat32ToInt16(left); // old 32 to 16 function
-  var left16 = downsampleBuffer(left, 44100, 16000);
+  var left16 = downsampleBuffer(left, 44100, 32000);
   socket.emit('binaryData', left16);
 }
 
@@ -127,59 +129,59 @@ socket.on('speechData', function(data) {
   // console.log(data.results[0].alternatives[0].transcript);
   let dataFinal = undefined || data.results[0].isFinal;
   const transcript = data.results[0].alternatives[0].transcript;
-  outputCallback(transcript, dataFinal)
+  outputCallback(transcript, dataFinal);
 
-//   if (dataFinal === false) {
-//     // console.log(resultText.lastElementChild);
-//     if (removeLastSentence) {
-//       resultText.lastElementChild.remove();
-//     }
-//     removeLastSentence = true;
+  //   if (dataFinal === false) {
+  //     // console.log(resultText.lastElementChild);
+  //     if (removeLastSentence) {
+  //       resultText.lastElementChild.remove();
+  //     }
+  //     removeLastSentence = true;
 
-//     //add empty span
-//     let empty = document.getElementById('speechToTextField');
-//     resultText.appendChild(empty);
+  //     //add empty span
+  //     let empty = document.getElementById('speechToTextField');
+  //     resultText.appendChild(empty);
 
-//     //add children to empty span
-//     let edit = addTimeSettingsInterim(data);
+  //     //add children to empty span
+  //     let edit = addTimeSettingsInterim(data);
 
-//     for (var i = 0; i < edit.length; i++) {
-//       resultText.lastElementChild.appendChild(edit[i]);
-//       resultText.lastElementChild.appendChild(
-//         document.createTextNode('\u00A0')
-//       );
-//     }
-//   } else if (dataFinal === true) {
-//     resultText.lastElementChild.remove();
+  //     for (var i = 0; i < edit.length; i++) {
+  //       resultText.lastElementChild.appendChild(edit[i]);
+  //       resultText.lastElementChild.appendChild(
+  //         document.createTextNode('\u00A0')
+  //       );
+  //     }
+  //   } else if (dataFinal === true) {
+  //     resultText.lastElementChild.remove();
 
-//     //add empty span
-//     let empty = document.getElementById('speechToTextField');
-//     resultText.appendChild(empty);
+  //     //add empty span
+  //     let empty = document.getElementById('speechToTextField');
+  //     resultText.appendChild(empty);
 
-//     //add children to empty span
-//     let edit = addTimeSettingsFinal(data);
-//     for (var i = 0; i < edit.length; i++) {
-//       if (i === 0) {
-//         edit[i].innerText = capitalize(edit[i].innerText);
-//       }
-//       resultText.lastElementChild.appendChild(edit[i]);
+  //     //add children to empty span
+  //     let edit = addTimeSettingsFinal(data);
+  //     for (var i = 0; i < edit.length; i++) {
+  //       if (i === 0) {
+  //         edit[i].innerText = capitalize(edit[i].innerText);
+  //       }
+  //       resultText.lastElementChild.appendChild(edit[i]);
 
-//       if (i !== edit.length - 1) {
-//         resultText.lastElementChild.appendChild(
-//           document.createTextNode('\u00A0')
-//         );
-//       }
-//     }
-//     resultText.lastElementChild.appendChild(
-//       document.createTextNode('\u002E\u00A0')
-//     );
+  //       if (i !== edit.length - 1) {
+  //         resultText.lastElementChild.appendChild(
+  //           document.createTextNode('\u00A0')
+  //         );
+  //       }
+  //     }
+  //     resultText.lastElementChild.appendChild(
+  //       document.createTextNode('\u002E\u00A0')
+  //     );
 
-//     console.log("Google Speech sent 'final' Sentence.");
-//     // finalWord = true;
-//     // endButton.disabled = false;
+  //     console.log("Google Speech sent 'final' Sentence.");
+  //     // finalWord = true;
+  //     // endButton.disabled = false;
 
-//     removeLastSentence = false;
-//   }
+  //     removeLastSentence = false;
+  //   }
 });
 
 //================= Juggling Spans for nlp Coloring =================
@@ -316,3 +318,25 @@ function capitalize(s) {
   }
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
+
+/**
+ * GET RATING AND EMOTIONS FROM SERVER
+ */
+
+export function sendTextForAnalysis(text, _ratingCallback, _emotionsCallback) {
+  socket.emit('getRating', text);
+  socket.emit('getEmotions', text);
+  ratingCallback = _ratingCallback;
+  emotionsCallback = _emotionsCallback;
+}
+
+socket.on('rating', rating => {
+  console.log(rating);
+  console.log(ratingCallback)
+  ratingCallback(rating)
+});
+socket.on('emotions', emotions => {
+  console.log(emotions);
+  console.log(emotionsCallback)
+  emotionsCallback(emotions)
+});
