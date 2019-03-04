@@ -57,5 +57,5 @@ Team:
 
 - Daniel Meechan ([DMeechan](https://github.com/DMeechan))
 - Dee Yeum ([zdr2780](https://github.com/zdr2780))
-- Nguyen Van Nguyen ([moxis](https://github.com/moxis)
+- Nguyen Van Nguyen ([moxis](https://github.com/moxis))
 - Kanishk Ali Khanna ([kanishkalikhanna](https://github.com/kanishkalikhanna))
