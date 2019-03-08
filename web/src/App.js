@@ -304,7 +304,7 @@ class App extends Component {
             </span>
           ) : (
             <span style={{ color: '#C0C0C0' }}>
-              You have friends! There are {totalClients} people giving feedback
+              You have some friends! There are {totalClients} people giving feedback
               right now!
             </span>
           )}
