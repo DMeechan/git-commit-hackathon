@@ -26,7 +26,8 @@ let bufferSize = 2048,
   globalStream,
   outputCallback,
   ratingCallback,
-  emotionsCallback;
+  emotionsCallback,
+  connectionStatusCallback;
 
 // variables
 let resultText = document.getElementById('result-text'),
@@ -122,9 +123,19 @@ export function stopRecording() {
   // videoElement.srcObject = null;
 }
 
+export function connectionStatus(callback) {
+  connectionStatusCallback = callback;
+}
+
 //================= SOCKET IO =================
 socket.on('connect', function(data) {
   socket.emit('join', 'Server Connected to Client');
+  connectionStatusCallback(socket.connected);
+});
+
+socket.on('disconnect', function(data) {
+  console.log('Lost connection to server');
+  connectionStatusCallback(socket.connected);
 });
 
 socket.on('messages', function(data) {
@@ -355,5 +366,4 @@ export function getTotalClientsUpdates(_totalClientsCallback) {
     console.log('totalClients: ', totalClients);
     totalClientsCallback(totalClients);
   });
-  
 }

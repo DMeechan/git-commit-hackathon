@@ -21,6 +21,7 @@ import {
   sendTextForAnalysis,
   getTotalClientsUpdates,
 } from './websockets';
+import ServerStatus from './ServerStatus';
 
 const { Option } = Select;
 const Step = Steps.Step;
@@ -183,6 +184,7 @@ class App extends Component {
           title={
             <h1 style={{ marginBottom: '0px' }}>
               <b>MT1003 Module Feedback</b>
+              <ServerStatus />
             </h1>
           }
         >
@@ -304,8 +306,8 @@ class App extends Component {
             </span>
           ) : (
             <span style={{ color: '#C0C0C0' }}>
-              You have some friends! There are {totalClients} people giving feedback
-              right now!
+              You have some friends! There are {totalClients} people giving
+              feedback right now!
             </span>
           )}
         </div>
